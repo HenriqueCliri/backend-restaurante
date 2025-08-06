@@ -2,13 +2,11 @@ package com.ricl.restaurante.controller;
 
 import com.ricl.restaurante.model.Product;
 import com.ricl.restaurante.service.ProductService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")

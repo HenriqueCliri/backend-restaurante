@@ -14,7 +14,6 @@ public class ProductService {
 	public ProductService(ProductRepository productRepository, CategoryService categoryService) {
 		this.productRepository = productRepository;
 		this.categoryService = categoryService;
-
 	}
 
 	public List<Product> findAllProducts() {
