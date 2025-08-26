@@ -1,13 +1,12 @@
 package com.ricl.restaurante.service;
 
-import org.springframework.stereotype.Service;
-
 import com.ricl.restaurante.repository.OrderItemRepository;
 import com.ricl.restaurante.repository.OrderRepository;
 import com.ricl.restaurante.repository.ProductRepository;
 import com.ricl.restaurante.model.Order;
 import com.ricl.restaurante.model.OrderItem;
 import com.ricl.restaurante.model.Product;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -29,9 +28,9 @@ public class OrderService {
 
     @Transactional
     public Optional<Order> addProductToOrder(Long productId, int quantity) {
-        
-        Optional<Product> optionalProduct = productRepository.findById(productId);
+
         Order activeOrder = findOrCreateActiveOrder();
+        Optional<Product> optionalProduct = productRepository.findById(productId);
 
         if (optionalProduct.isEmpty()) {
             return Optional.empty();
@@ -59,19 +58,40 @@ public class OrderService {
             activeOrder.getOrderItems().add(orderItem);
         }
 
-        Order order = new Order();
-        order.setCustomerName("Guest");
-
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
-        orderItem.setQuantity(quantity);
-        orderItem.setPrice(product.getPrice());
-        orderItem.setOrder(order);
-
-        order.getOrderItems().add(orderItem);
-
-        Order saveOrder = orderRepository.save(order);
-        return Optional.of(saveOrder);
+        Order savedOrder = orderRepository.save(activeOrder);
+        return Optional.of(savedOrder);
     }
 
+    public Optional<Order> findActiveOrder() {
+        return orderRepository.findTopByOrderByIdDesc();
+    }
+
+    private Order findOrCreateActiveOrder() {
+        return orderRepository.findTopByOrderByIdDesc().orElseGet(() -> {
+            Order newOrder = new Order();
+            newOrder.setCustomerName("Ghest");
+            return orderRepository.save(newOrder);
+        });
+    }
+
+    @Transactional
+    public Optional<OrderItem> updateOrderItemQuantity(Long orderItemId, int quantity) {
+        Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemId);
+        if(optionalOrderItem.isPresent()) {
+            OrderItem item = optionalOrderItem.get();
+            item.setQuantity(quantity);
+            return Optional.of(orderItemRepository.save(item));
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public boolean removeOrderItem(Long orderItemId) {
+        Optional<OrderItem> optionalOrderItem = orderItemRepository.findById(orderItemId);
+        if(optionalOrderItem.isPresent()) {
+            orderItemRepository.deleteById(orderItemId);
+            return true;
+        }
+        return false;
+    }
 }

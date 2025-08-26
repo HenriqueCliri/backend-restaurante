@@ -11,6 +11,11 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
+    private Category category;
+
     @Column(nullable = false)
     private String name;
 
@@ -22,11 +27,6 @@ public class Product {
 
     @Column(nullable = false)
     private String imageUrl;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    @JsonIgnore
-    private Category category;
 
     public Product() {
 

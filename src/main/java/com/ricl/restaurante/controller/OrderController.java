@@ -1,16 +1,17 @@
 package com.ricl.restaurante.controller;
 
+import com.ricl.restaurante.dto.UpdateQuantityRequest;
 import com.ricl.restaurante.dto.AddToCartRequest;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.ricl.restaurante.service.OrderService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
 
+import com.ricl.restaurante.service.OrderService;
+
+import com.ricl.restaurante.model.OrderItem;
 import com.ricl.restaurante.model.Order;
+
+import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
@@ -31,5 +32,25 @@ public class OrderController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/cart")
+    public ResponseEntity<Order> getActiveOrder() {
+        Optional<Order> activeOrder = orderService.findActiveOrder();
+        return activeOrder.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("items/{id}")
+    public ResponseEntity<OrderItem> updateOrderItemQuantity(@PathVariable Long id, @RequestBody UpdateQuantityRequest request) {
+        Optional<OrderItem> updatedItem = orderService.updateOrderItemQuantity(id, request.getQuantity());
+        return updatedItem.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+    
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<Void> removeOrderItem(@PathVariable Long id) {
+        if(orderService.removeOrderItem(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
