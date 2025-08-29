@@ -4,6 +4,7 @@ import com.ricl.restaurante.dto.UpdateQuantityRequest;
 import com.ricl.restaurante.dto.AddToCartRequest;
 
 import org.springframework.http.ResponseEntity;
+import com.ricl.restaurante.service.ProductService;
 import org.springframework.http.HttpStatus;
 
 import com.ricl.restaurante.service.OrderService;
@@ -17,10 +18,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController {
+
+    private final ProductService productService;
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){
+    public OrderController(OrderService orderService, ProductController productController, ProductService productService){
         this.orderService = orderService;
+        this.productService = productService;
     }
 
     @PostMapping("/add-item")
@@ -52,5 +56,12 @@ public class OrderController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/reset-data")
+    public ResponseEntity<Void> resetDatabase() {
+        orderService.clearAllData();
+        productService.initializeData();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,18 +1,18 @@
 package com.ricl.restaurante.service;
-
-import com.ricl.restaurante.repository.OrderItemRepository;
-import com.ricl.restaurante.repository.OrderRepository;
-import com.ricl.restaurante.repository.ProductRepository;
-import com.ricl.restaurante.model.Order;
-import com.ricl.restaurante.model.OrderItem;
-import com.ricl.restaurante.model.Product;
+import com.ricl.restaurante.repository.*;
+import com.ricl.restaurante.controller.CategoryController;
+import com.ricl.restaurante.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class OrderService {
+
+    private final CategoryRepository categoryRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
@@ -20,10 +20,11 @@ public class OrderService {
     public OrderService(
             OrderRepository orderRepository,
             OrderItemRepository orderItemRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository, CategoryRepository categoryRepository, CategoryController categoryController) {
                     this.orderRepository = orderRepository;
                     this.productRepository = productRepository;
                     this.orderItemRepository = orderItemRepository;
+                    this.categoryRepository = categoryRepository;
                 }
 
     @Transactional
@@ -93,5 +94,13 @@ public class OrderService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void clearAllData() {
+        orderRepository.deleteAll();
+        orderItemRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 }
