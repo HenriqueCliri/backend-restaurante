@@ -30,12 +30,12 @@ Este é um projeto de um sistema para gestão de restaurantes, desenvolvido com 
 1.  **Pré-requisitos**: Certifique-se de ter o **JDK 17** ou superior e o **Maven** instalados.
 2.  **Clonar o repositório**:
     ```bash
-    git clone [link-do-seu-repositorio]
-    cd [nome-do-seu-projeto]
+    git clone https://github.com/HenriqueCliri/restaurant-ricl.git
+    cd restaurante-ricl
     ```
 3.  **Compilar e Rodar**:
     ```bash
-    ./mvnw spring-boot:run
+    ./mvn spring-boot:run
     ```
 
 -----
