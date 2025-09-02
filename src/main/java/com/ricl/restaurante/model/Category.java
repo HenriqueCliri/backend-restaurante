@@ -1,6 +1,6 @@
 package com.ricl.restaurante.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
+    // @JsonIgnore
     private Long id;
 
     @Column(nullable = false, unique = true)

@@ -37,32 +37,43 @@ public class ProductService {
 	public List<Product> searchProductsByName(String searchItem) {
 		return productRepository.findByNameContainingIgnoreCase(searchItem);
 	}
-	
+
 	public Product saveProduct(Product product) {
 		if (product.getCategory() != null && product.getCategory().getId() != null) {
-			categoryRepository.findCategoryById(product.getCategory().getId())
-					.orElseThrow(() -> new IllegalArgumentException(
-							"Category with ID " + product.getId() + "does not exist"));
+			categoryRepository.findById(product
+			.getCategory()
+			.getId())
+			.orElseThrow(() -> new IllegalArgumentException("Category with ID " + product.getCategory().getId() + "does not exist"));
 		} else {
 			throw new IllegalArgumentException("Product must be associate with a valid category");
 		}
 		return productRepository.save(product);
 	}
 
+	@Transactional
+	public void initializeData() {
+		Category mainDishes = new Category("Pratos Principais");
+		Category drinks = new Category("Bebidas");
+		categoryRepository.saveAll(List.of(mainDishes, drinks));
+
+		Product burger = new Product(
+				"Hambúrguer Clássico",
+				"Hambúrguer suculento com queijo, alface, tomate e molho especial.",
+				new BigDecimal("29.90"),
+				"https://images.unsplash.com/photo-1571091718767-18b5b1457add",
+				mainDishes);
+		productRepository.save(burger);
+
+		Product soda = new Product(
+				"Refrigerante Lata",
+				"Lata de 350ml de refrigerante a sua escolha.",
+				new BigDecimal("6.50"),
+				"https://images.unsplash.com/photo-1599818826702-861f1c243886",
+				drinks);
+		productRepository.save(soda);
+	}
+
 	public void deleteProduct(Long id) {
 		productRepository.deleteById(id);
 	}
-
-	@Transactional
-    public void initializeData() {
-        Category mainDishes = new Category("Pratos Principais");
-        Category drinks = new Category("Bebidas");
-        categoryRepository.saveAll(List.of(mainDishes, drinks));
-        
-        Product burger = new Product(
-            "Hamburguer", "Descrição", new BigDecimal("29.90"),
-            "url", mainDishes
-        );
-        productRepository.save(burger);
-    }
 }
