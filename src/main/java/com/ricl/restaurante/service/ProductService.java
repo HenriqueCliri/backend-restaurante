@@ -1,6 +1,7 @@
 package com.ricl.restaurante.service;
 
 import com.ricl.restaurante.model.Product;
+import com.ricl.restaurante.dto.ProductResponseDTO;
 import com.ricl.restaurante.model.Category;
 
 import com.ricl.restaurante.repository.ProductRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -22,14 +24,33 @@ public class ProductService {
 		this.categoryRepository = categoryRepository;
 	}
 
-	public List<Product> findAllProducts() {
-		return productRepository.findAll();
+	public static ProductResponseDTO convertToDTO(Product product) {
+		Long categoryId = product.getCategory() != null ? product.getCategory().getId() : null;
+		String categoryName = product.getCategory() != null ? product.getCategory().getName() : null;
+
+		return new ProductResponseDTO(
+			product.getId(),
+			product.getName(),
+			product.getDescription(),
+			product.getPrice(),
+			categoryId,
+			product.getImageUrl(),
+			categoryName
+		);
 	}
 
-	public Optional<Product> findProductById(Long id) {
-		return productRepository.findById(id);
+	public List<ProductResponseDTO> findAllProductsDTO() {
+		return productRepository.findAll().stream()
+		.map(ProductService::convertToDTO)
+		.collect(Collectors.toList());
 	}
 
+	public Optional<ProductResponseDTO> findProductDTOById(Long id) {
+		return productRepository.findById(id)
+		.map(ProductService::convertToDTO);
+	}
+	
+	//devo usar o DTO para o restante dos métodos?
 	public List<Product> findProductsByCategoryId(Long categoryId) {
 		return productRepository.findByCategoryId(categoryId);
 	}

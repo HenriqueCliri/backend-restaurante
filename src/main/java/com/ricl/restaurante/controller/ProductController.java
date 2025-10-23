@@ -1,10 +1,12 @@
 package com.ricl.restaurante.controller;
 
+import com.ricl.restaurante.dto.ProductResponseDTO;
 import com.ricl.restaurante.model.Product;
 import com.ricl.restaurante.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
@@ -18,25 +20,30 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String search) {
 
-        List<Product> products;
+        List<ProductResponseDTO> products; ///como posso tratar dois tipos em um mesmo método?
         if(categoryId != null) {
             products = productService.findProductsByCategoryId(categoryId);
         } else if(search != null && !search.isEmpty()) {
             products = productService.searchProductsByName(search);
         }
         else {
-            products = productService.findAllProducts();
+            products = productService.findAllProductsDTO();
         }
-        return ResponseEntity.ok(products);
+
+        List<ProductResponseDTO> productsDTOs = products.stream()
+        .map(ProductService::convertToDTO)
+        .collect(Collectors.toList());
+
+        return ResponseEntity.ok(productsDTOs);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return productService.findProductById(id)
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
+        return productService.findProductDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
